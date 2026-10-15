@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aule libere · Ingegneria UniBS</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚪</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <h1>Aule libere</h1>
+      <p class="sub">Ingegneria · <span id="buildingsSub">ING1 · ING2 · ING3</span></p>
+    </div>
+
+    <div class="topRight">
+      <div class="tabs" role="tablist">
+        <button class="tab is-on" data-view="day" role="tab">Giorno</button>
+        <button class="tab" data-view="week" role="tab">Settimana</button>
+      </div>
+      <button id="refresh" class="icon-btn" title="Ricarica i dati dal portale">↻</button>
+    </div>
+  </header>
+
+  <section class="bar">
+    <div class="datenav">
+      <button class="icon-btn" id="prev" title="Giorno precedente">‹</button>
+      <button class="today-btn" id="todayBtn">Oggi</button>
+      <button class="icon-btn" id="next" title="Giorno successivo">›</button>
+      <div class="dateLabel">
+        <strong id="dateTitle">—</strong>
+        <span id="dateHint" class="muted"></span>
+      </div>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="filters">
+    <div class="fgroup">
+      <span class="flabel">Edifici</span>
+      <div class="chips" id="fBuildings"></div>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">Tipo</span>
+      <div class="chips" id="fTypes"></div>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">Dalle</span>
+      <select id="fFrom"></select>
+      <span class="flabel">alle</span>
+      <select id="fTo"></select>
+    </div>
+    <div class="fgroup">
+      <span class="flabel">Min. posti</span>
+      <input id="fCap" type="number" min="0" step="10" value="0" inputmode="numeric">
+    </div>
+    <div class="fgroup grow">
+      <input id="fQuery" type="search" placeholder="Filtra aula (es. N.6, B1, M1)…">
+    </div>
+  </section>
+
+  <section id="nowPanel" class="now" hidden></section>
+
+  <main id="content" class="content">
+    <div class="loading">Carico le prenotazioni dal portale…</div>
+  </main>
+
+  <footer class="foot">
+    <span id="stamp"></span>
+    <span class="muted">Dati pubblici del portale UP di UniBS. Le prenotazioni sono pubblicate a scaglioni: un'aula libera in una data lontana può essere occupata in seguito. Una lezione annullata viene considerata aula libera.</span>
+    <a id="portalLink" href="https://unibs-public.prod.up.cineca.it/aule" target="_blank" rel="noopener">Portale UP ↗</a>
+    <a href="#" id="invLink">Aggiorna inventario aule</a>
+  </footer>
+</div>
+
+<script src="rooms.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

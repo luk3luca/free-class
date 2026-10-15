@@ -1,0 +1,11 @@
+# local data cache created by aule-libere.sh
+cache/
+
+# personal notes and snapshots (kept locally, not published)
+NOTES-esplorazione.md
+_dati-esplorazione/
+
+# preview screenshots
+_anteprima-*.png
+
+.DS_Store
