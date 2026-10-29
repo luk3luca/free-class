@@ -161,9 +161,11 @@ input[type=search]{min-width:150px}
 .blk.short .dur{display:none}
 .blk.mini{padding:0;border-radius:6px}
 .blk.mini span{display:none}
+/* free ranges shown as text under the timeline on small screens */
+.row .rowrng{display:none}
 
 /* ---------- week grid ---------- */
-.week{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:auto}
+.week{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:auto;overscroll-behavior-x:contain}
 table.wt{border-collapse:separate;border-spacing:0;width:100%}
 table.wt th,table.wt td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:12.5px}
 table.wt thead th{
@@ -187,6 +189,33 @@ td.cell:hover{background:var(--accent-soft) !important}
 .bldg-row td{background:var(--bg-soft) !important;font-weight:600;font-size:12.5px;text-transform:none}
 .free-none{color:var(--muted);font-size:11.5px}
 
+/* ---------- week cards (mobile alternative to the table) ---------- */
+.week-cards{display:none;flex-direction:column;gap:16px}
+.wc-group{display:flex;flex-direction:column;gap:10px}
+.wc-group-head{display:flex;align-items:baseline;gap:8px;padding:0 2px}
+.wc-group-head b{font-size:14px}
+.wc-group-head span{font-size:12px;color:var(--muted)}
+.wc-room{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.wc-head{padding:10px 12px;background:var(--bg-soft);border-bottom:1px solid var(--line)}
+.wc-days{display:flex;flex-direction:column}
+.wc-day{
+  display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;
+  border:0;border-top:1px solid var(--line);background:transparent;color:inherit;
+  font:inherit;text-align:left;cursor:pointer;transition:background .15s;
+}
+.wc-day:first-child{border-top:0}
+.wc-day:active{background:var(--bg-soft)}
+.wc-dname{flex:0 0 84px;font-size:12px;color:var(--muted);text-transform:capitalize}
+.wc-val{flex:1;min-width:0}
+.wc-chev{color:var(--muted);font-size:18px;line-height:1}
+.wk-hint{font-size:12px;margin:8px 2px 0}
+.wc-pill{
+  display:inline-flex;align-items:baseline;gap:5px;background:var(--accent-soft);
+  border:1px solid var(--accent-line);color:var(--accent);border-radius:6px;
+  padding:2px 7px;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;
+}
+.wc-pill .dur{font-weight:500;opacity:.75}
+
 /* ---------- misc ---------- */
 .loading,.empty,.error{padding:26px 18px;text-align:center;color:var(--muted);font-size:14px}
 .error{color:var(--danger)}
@@ -204,3 +233,63 @@ td.cell:hover{background:var(--accent-soft) !important}
   table.wt th.room-col,table.wt td.room-col{width:170px;min-width:170px}
   .filters{gap:12px}
 }
+
+/* ---------- phones ---------- */
+@media (max-width:760px){
+  .wrap{padding:14px 12px 28px}
+
+  /* header: tabs on their own row, bigger tap targets */
+  .top{flex-wrap:wrap;gap:12px;margin-bottom:14px}
+  h1{font-size:19px}
+  .brand .sub{font-size:12.5px}
+  .topRight{width:100%;gap:8px}
+  .tabs{flex:1;min-width:0}
+  .tab{flex:1;padding:9px 10px}
+  .icon-btn{width:40px;height:40px;font-size:18px;flex:0 0 auto}
+  .today-btn{min-height:40px}
+
+  /* bar */
+  .bar{gap:10px}
+  .datenav{flex-wrap:wrap;gap:6px}
+  .dateLabel{flex:1 1 100%;margin:2px 0 0;gap:6px}
+  .dateLabel strong{font-size:15.5px}
+  .status{font-size:12px}
+
+  /* filters */
+  .filters{padding:11px 12px;gap:12px}
+  .fgroup{flex-wrap:wrap;gap:6px;width:100%}
+  .fgroup.grow{min-width:0}
+  .chips{flex-wrap:wrap}
+  .chip{padding:8px 14px;min-height:38px}
+  select,input[type=number],input[type=search]{font-size:16px;min-height:42px}
+  input[type=number]{width:92px}
+  select{flex:1;min-width:0}
+
+  /* now panel */
+  .now{padding:12px}
+  .now-item{font-size:12.5px;padding:6px 11px}
+
+  /* day view: room name on top, full-width timeline + readable ranges */
+  .bldg-head{padding:10px 12px;flex-wrap:wrap;gap:2px 8px}
+  .axis{padding:6px 12px 0}
+  .axis .axis-room{display:none}
+  .axis .tick{font-size:9.5px}
+  .axis .tick:nth-child(even){display:none}
+  .axis .tick:first-child{transform:none}
+  .axis .tick:last-child{transform:translateX(-100%)}
+  .row{flex-direction:column;padding:10px 12px;gap:6px}
+  .row .rmeta{width:100%;flex:0 0 auto;padding:0;min-width:0}
+  .row .rname{white-space:normal;font-size:13.5px;line-height:1.3}
+  .row .rsub{white-space:normal;font-size:11.5px}
+  .track{width:100%;height:28px;flex:0 0 28px}
+  .row .blk{background:var(--accent-line);border-color:var(--accent-line)}
+  .row .blk span{display:none}
+  .row .rowrng{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .row .rowrng .range{display:inline-flex;align-items:baseline;gap:5px}
+  .row .rowrng .dur{font-weight:500;opacity:.75}
+
+  /* week view: cards instead of the squeezed table */
+  .week{display:none}
+  .week-cards{display:flex}
+}
+

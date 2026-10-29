@@ -18,6 +18,9 @@ open index.html          # macOS: double-click works too
 - **Adesso** panel (only when the selected day is today): free rooms right now, sorted by how long
   they stay free.
 - **Settimana**: rooms × Mon–Fri, each cell lists the free intervals; click a cell to open that day.
+- **Mobile**: on narrow screens the day rows stack the room name above a full-width timeline (with the
+  ranges repeated as text chips), and the week table becomes a list of per-room cards. Nothing needs
+  horizontal scrolling.
 - Filters: buildings (ING1/ING2/ING3/ING6), room type (Aule on, Laboratori/Sale off), minimum seats, text filter.
 
 Data refreshes every 5 minutes while the page is open on today; the `↻` button forces a reload.

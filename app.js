@@ -311,7 +311,10 @@ function renderDay(free) {
             return `<div class="blk ${mode}" style="left:${left.toFixed(3)}%;width:${w.toFixed(3)}%"
               title="${esc(f.room.nome)} · libera dalle ${iv.from} alle ${iv.to} (${fmtDur(iv.mins)})">${inner}</div>`;
           }).join('')}
-        </div></div>`).join('')}
+        </div>
+        <div class="ranges rowrng">${f.intervals.map(iv =>
+          `<span class="range">${iv.from}–${iv.to}<span class="dur">${fmtDur(iv.mins)}</span></span>`
+        ).join('')}</div></div>`).join('')}
       </div></section>`;
   }
   content.innerHTML = notice + html;
@@ -320,6 +323,12 @@ function renderDay(free) {
 
 function parseHM(s) { const [h, m] = s.split(':').map(Number); return h * 60 + m; }
 
+function weekIntervals(room, dateISO) {
+  const base = dayStartAbs(dateISO);
+  return freeIntervals(state.week.data.get(room.edificio + '|' + room.aula), base + state.from, base + state.to)
+    .map(([s, e]) => ({ from: fmtHM(s - base), to: fmtHM(e - base), mins: e - s }));
+}
+
 function renderWeek() {
   const content = $('#content');
   const w = state.week;
@@ -327,30 +336,49 @@ function renderWeek() {
   const rooms = visibleRooms().filter(r => state.buildings.has(r.edificio));
   if (!rooms.length) { content.innerHTML = `<div class="empty">Nessuna aula con questi filtri.</div>`; return; }
 
-  let body = '';
+  // compute each room/day once, then render both the table (desktop) and the cards (mobile)
+  const groups = [];
   for (const b of BUILDINGS) {
     const list = rooms.filter(r => r.edificio === b.code)
-      .sort((a, x) => a.aula.localeCompare(x.aula, undefined, { numeric: true }));
-    if (!list.length) continue;
-    body += `<tr class="bldg-row"><td class="room-col">${esc(b.code)}</td><td colspan="${w.days.length}">${esc(b.addr)}</td></tr>`;
-    for (const r of list) {
-      const cells = w.days.map(d => {
-        const base = dayStartAbs(d);
-        const iv = freeIntervals(w.data.get(r.edificio + '|' + r.aula), base + state.from, base + state.to)
-          .map(([s, e]) => ({ from: fmtHM(s - base), to: fmtHM(e - base), mins: e - s }));
-        if (!iv.length) return `<td class="cell" data-day="${d}"><span class="free-none">—</span></td>`;
-        return `<td class="cell" data-day="${d}"><div class="ranges">${iv.map(x => `<span class="range">${x.from}–${x.to}</span>`).join('')}</div></td>`;
-      }).join('');
-      body += `<tr><td class="room-col">${roomLabel(r)}</td>${cells}</tr>`;
-    }
+      .sort((a, x) => a.aula.localeCompare(x.aula, undefined, { numeric: true }))
+      .map(r => ({ room: r, days: w.days.map(d => weekIntervals(r, d)) }));
+    if (list.length) groups.push({ b, list });
   }
+
+  const cellContent = (iv) => iv.length
+    ? `<div class="ranges">${iv.map(x => `<span class="range">${x.from}–${x.to}</span>`).join('')}</div>`
+    : `<span class="free-none">—</span>`;
+
+  let body = '', cards = '';
+  for (const { b, list } of groups) {
+    body += `<tr class="bldg-row"><td class="room-col">${esc(b.code)}</td><td colspan="${w.days.length}">${esc(b.addr)}</td></tr>`;
+    body += list.map(({ room, days }) => `<tr><td class="room-col">${roomLabel(room)}</td>${
+      days.map((iv, i) => `<td class="cell" data-day="${w.days[i]}">${cellContent(iv)}</td>`).join('')
+    }</tr>`).join('');
+
+    cards += `<section class="wc-group">
+      <div class="wc-group-head"><b>${esc(b.code)}</b><span>${esc(b.addr)}</span></div>
+      ${list.map(({ room, days }) => `<article class="wc-room">
+        <div class="wc-head">${roomLabel(room)}</div>
+        <div class="wc-days">${days.map((iv, i) => `<button type="button" class="wc-day" data-day="${w.days[i]}">
+          <span class="wc-dname">${esc(shortDate(w.days[i]))}</span>
+          <span class="wc-val">${iv.length
+            ? iv.map(x => `<span class="wc-pill">${x.from}–${x.to}<span class="dur">${fmtDur(x.mins)}</span></span>`).join('')
+            : `<span class="free-none">—</span>`}</span>
+          <span class="wc-chev" aria-hidden="true">›</span>
+        </button>`).join('')}</div>
+      </article>`).join('')}
+    </section>`;
+  }
+
   content.innerHTML = `<div class="week"><table class="wt">
       <thead><tr><th class="room-col">Aula</th>${w.days.map(d => `<th>${esc(shortDate(d))}</th>`).join('')}</tr></thead>
       <tbody>${body}</tbody></table></div>
-      <p class="muted" style="font-size:12px;margin:8px 2px 0">Clicca una cella per aprire quel giorno. «—» = nessuno spazio libero nella fascia selezionata.</p>`;
+      <div class="week-cards">${cards}</div>
+      <p class="muted wk-hint">Seleziona un giorno per aprirlo. «—» = nessuno spazio libero nella fascia selezionata.</p>`;
 
-  content.querySelectorAll('td.cell').forEach(td => td.addEventListener('click', () => {
-    state.date = td.dataset.day;
+  content.querySelectorAll('td.cell, .wc-day').forEach(el => el.addEventListener('click', () => {
+    state.date = el.dataset.day;
     setView('day');
   }));
 }
